@@ -44,7 +44,9 @@ class PDFLayoutAnalyzer(PDFTextDevice):
         return
 
     def end_page(self, page):
-        assert not self._stack, str(len(self._stack))
+        if self._stack:
+            log.warn("PDF did not end objects properly. Stack size (should be 0): " + str(len(self._stack)))
+            self._stack = []
         assert isinstance(self.cur_item, LTPage), str(type(self.cur_item))
         if self.laparams is not None:
             self.cur_item.analyze(self.laparams)
