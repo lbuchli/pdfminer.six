@@ -112,11 +112,11 @@ class CMap(CMapBase):
 class IdentityCMap(CMapBase):
 
     def decode(self, code):
-        n = len(code)//2
-        if n:
-            return struct.unpack('>%dH' % n, code)
-        else:
-            return ()
+        n = -(-len(code)//2) # ceil division
+        padding = b'' if len(code) % 2 == 0 else b'\x00'
+        if padding:
+            log.warn("Added byte padding where it should not have been nessessary. Broken pdf.")
+        return struct.unpack('>%dH' % n, padding + code)
 
 
 class IdentityCMapByte(IdentityCMap):
